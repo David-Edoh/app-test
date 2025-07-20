@@ -99,36 +99,36 @@
             return bytesPerSec.toFixed(2) + " B/s";
           }
         }
-
+        const percentageEl = document.querySelector("#unity-progress-percentage");
+        const speedEl = document.querySelector("#unity-download-speed");
+        const progressBar = document.querySelector("#unity-progress-bar-full");
 
         createUnityInstance(canvas, config, (progress) => {
-          const percentageEl = document.querySelector("#unity-progress-percentage");
-          const speedDisplay = document.querySelector("#unity-download-speed");
-          const progressBar = document.querySelector("#unity-progress-bar-full");
+          const now = performance.now();
+          const elapsedSec = (now - lastTime) / 1000;
 
           if (progress >= 0.9) {
-            // Finalizing stage
+            // We're finalizing, show full bar and "Finalizing..."
             progressBar.style.width = "100%";
+            percentageEl.style.display = "block";
             percentageEl.textContent = "Finalizing...";
-            speedDisplay.style.display = "none";
+            speedEl.style.display = "none";
           } else {
-            // Normal progress stage
-            const percentage = Math.round(progress * 100);
-            progressBar.style.width = percentage + "%";
-            percentageEl.textContent = percentage + "%";
-
-            const now = performance.now();
-            const elapsedSec = (now - lastTime) / 1000;
+            // Normal progress
+            const percent = Math.round(progress * 100);
+            progressBar.style.width = percent + "%";
+            percentageEl.style.display = "block";
+            percentageEl.textContent = percent + "%";
 
             if (elapsedSec >= 0.5) {
-              const totalSize = 100 * 1024 * 1024; // Estimate build size (~100MB)
+              const totalSize = 100 * 1024 * 1024; // Estimate: 100MB
               const estimatedBytesLoaded = progress * totalSize;
 
               const bytesThisInterval = estimatedBytesLoaded - lastLoadedBytes;
               const speed = bytesThisInterval / elapsedSec;
 
-              speedDisplay.textContent = formatSpeed(speed);
-              speedDisplay.style.display = "block";
+              speedEl.style.display = "block";
+              speedEl.textContent = formatSpeed(speed);
 
               lastTime = now;
               lastLoadedBytes = estimatedBytesLoaded;

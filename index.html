@@ -12,13 +12,16 @@
   <body>
     <div id="unity-container" class="unity-desktop">
       <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
+
       <div id="unity-loading-bar">
         <div style="color: white; text-align: center; font-family: sans-serif; font-weight: bold;">Trisonet Metaverse</div>
         <div id="unity-progress-bar-empty">
           <div id="unity-progress-bar-full"></div>
         </div>
         <div id="unity-progress-percentage" style="color: white; text-align: center; margin-top: 5px; font-family: sans-serif; font-size: 14px;"></div>
+        <div id="unity-download-speed" style="color: white; text-align: center; margin-top: 3px; font-family: sans-serif; font-size: 13px;"></div>
       </div>
+
       <div id="unity-warning"> </div>
       <div id="unity-footer">
         <div id="unity-fullscreen-button"></div>
@@ -83,11 +86,42 @@
       var script = document.createElement("script");
       script.src = loaderUrl;
       script.onload = () => {
+
+        let lastTime = performance.now();
+        let lastLoadedBytes = 0;
+        const speedDisplay = document.querySelector("#unity-download-speed");
+        function formatSpeed(bytesPerSec) {
+          if (bytesPerSec > 1024 * 1024) {
+            return (bytesPerSec / (1024 * 1024)).toFixed(2) + " MB/s";
+          } else if (bytesPerSec > 1024) {
+            return (bytesPerSec / 1024).toFixed(2) + " KB/s";
+          } else {
+            return bytesPerSec.toFixed(2) + " B/s";
+          }
+        }
+
+
         createUnityInstance(canvas, config, (progress) => {
-        const percentage = Math.round(progress * 100);
-        document.querySelector("#unity-progress-bar-full").style.width = percentage + "%";
-        document.querySelector("#unity-progress-percentage").textContent = percentage + "%";
-      }).then((unityInstance) => {
+          const percentage = Math.round(progress * 100);
+          document.querySelector("#unity-progress-bar-full").style.width = percentage + "%";
+          document.querySelector("#unity-progress-percentage").textContent = percentage + "%";
+
+          const now = performance.now();
+          const elapsedSec = (now - lastTime) / 1000;
+          
+          if (elapsedSec >= 0.5) {
+            const totalSize = 100 * 1024 * 1024; // Estimate: 100MB build size (you can adjust)
+            const estimatedBytesLoaded = progress * totalSize;
+
+            const bytesThisInterval = estimatedBytesLoaded - lastLoadedBytes;
+            const speed = bytesThisInterval / elapsedSec;
+
+            speedDisplay.textContent = formatSpeed(speed);
+
+            lastTime = now;
+            lastLoadedBytes = estimatedBytesLoaded;
+          }
+        }).then((unityInstance) => {
                 document.querySelector("#unity-loading-bar").style.display = "none";
                 document.querySelector("#unity-fullscreen-button").onclick = () => {
                   unityInstance.SetFullscreen(1);

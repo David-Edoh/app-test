@@ -1,0 +1,5 @@
+/build.wasm.unityweb
+  Content-Type: application/wasm
+
+/*
+  Access-Control-Allow-Origin: *

@@ -121,7 +121,7 @@
             percentageEl.textContent = percent + "%";
 
             if (elapsedSec >= 0.5) {
-              const totalSize = 100 * 1024 * 1024; // Estimate: 100MB
+              const totalSize = 200 * 1024 * 1024; // Estimate: 100MB
               const estimatedBytesLoaded = progress * totalSize;
 
               const bytesThisInterval = estimatedBytesLoaded - lastLoadedBytes;

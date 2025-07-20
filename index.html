@@ -102,24 +102,37 @@
 
 
         createUnityInstance(canvas, config, (progress) => {
-          const percentage = Math.round(progress * 100);
-          document.querySelector("#unity-progress-bar-full").style.width = percentage + "%";
-          document.querySelector("#unity-progress-percentage").textContent = percentage + "%";
+          const percentageEl = document.querySelector("#unity-progress-percentage");
+          const speedDisplay = document.querySelector("#unity-download-speed");
+          const progressBar = document.querySelector("#unity-progress-bar-full");
 
-          const now = performance.now();
-          const elapsedSec = (now - lastTime) / 1000;
-          
-          if (elapsedSec >= 0.5) {
-            const totalSize = 100 * 1024 * 1024; // Estimate: 100MB build size (you can adjust)
-            const estimatedBytesLoaded = progress * totalSize;
+          if (progress >= 0.9) {
+            // Finalizing stage
+            progressBar.style.width = "100%";
+            percentageEl.textContent = "Finalizing...";
+            speedDisplay.style.display = "none";
+          } else {
+            // Normal progress stage
+            const percentage = Math.round(progress * 100);
+            progressBar.style.width = percentage + "%";
+            percentageEl.textContent = percentage + "%";
 
-            const bytesThisInterval = estimatedBytesLoaded - lastLoadedBytes;
-            const speed = bytesThisInterval / elapsedSec;
+            const now = performance.now();
+            const elapsedSec = (now - lastTime) / 1000;
 
-            speedDisplay.textContent = formatSpeed(speed);
+            if (elapsedSec >= 0.5) {
+              const totalSize = 100 * 1024 * 1024; // Estimate build size (~100MB)
+              const estimatedBytesLoaded = progress * totalSize;
 
-            lastTime = now;
-            lastLoadedBytes = estimatedBytesLoaded;
+              const bytesThisInterval = estimatedBytesLoaded - lastLoadedBytes;
+              const speed = bytesThisInterval / elapsedSec;
+
+              speedDisplay.textContent = formatSpeed(speed);
+              speedDisplay.style.display = "block";
+
+              lastTime = now;
+              lastLoadedBytes = estimatedBytesLoaded;
+            }
           }
         }).then((unityInstance) => {
                 document.querySelector("#unity-loading-bar").style.display = "none";

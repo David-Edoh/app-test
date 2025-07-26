@@ -107,7 +107,7 @@
           const now = performance.now();
           const elapsedSec = (now - lastTime) / 1000;
 
-          if (progress >= 0.9) {
+          if (progress == 1) {
             // We're finalizing, show full bar and "Finalizing..."
             progressBar.style.width = "100%";
             percentageEl.style.display = "block";

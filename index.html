@@ -6,6 +6,10 @@
     <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
 
     <title>TrisoNet Metaverse</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
   </head>
@@ -135,15 +139,22 @@
             }
           }
         }).then((unityInstance) => {
-                document.querySelector("#unity-loading-bar").style.display = "none";
-                document.querySelector("#unity-fullscreen-button").onclick = () => {
-                  unityInstance.SetFullscreen(1);
-                };
 
-              }).catch((message) => {
-                alert(message);
-              });
-            };
+              window.unityInstance = unityInstance; // Make it global
+              document.querySelector("#unity-loading-bar").style.display = "none";
+              document.querySelector("#unity-fullscreen-button").onclick = () => {
+                unityInstance.SetFullscreen(1);
+              };              
+
+              // ✅ Load script after Unity is ready
+              const modalsScript = document.createElement("script");
+              modalsScript.src = "TemplateData/ui-modals.js";
+              document.body.appendChild(modalsScript);
+ 
+          }).catch((message) => {
+            alert(message);
+          });
+        };
 
       document.body.appendChild(script);
 
